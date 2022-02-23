@@ -2,9 +2,13 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Header from '../components/Header'
 import { sanityClient, urlFor } from '../sanity'
+import { Post } from '../typings'
 
-const Home: NextPage = (props) => {
-   console.log(props)
+interface Props {
+   posts: Post[]
+}
+
+const Home: NextPage<Props> = (props) => {
    return (
       <div className='max-w-7xl mx-auto'>
          <Head>
