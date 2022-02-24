@@ -4,12 +4,28 @@ import Header from '../../components/Header'
 import { sanityClient, urlFor } from '../../sanity'
 import { Post } from '../../typings'
 import PortableText from 'react-portable-text'
+import {useForm, SubmitHandler} from 'react-hook-form'
 
 interface Props {
    post: Post
 }
 
+interface FormInput {
+   _id: string
+   name: string
+   email: string
+   comment: string
+}
+
 const Post = ({post}: Props) => {
+   const {
+      register, 
+      handleSubmit, 
+      formState:{
+         errors
+      }
+   } = useForm<FormInput>()
+
    return (
       <main>
          <Header />
@@ -23,7 +39,7 @@ const Post = ({post}: Props) => {
                   Blog post by <span className='text-green-600'>{post.author.name}</span> - Published at {new Date(post._createdAt).toLocaleString()}
                </p>
             </div>
-            <div>
+            <div className='mt-10'>
                <PortableText 
                   dataset={process.env.NEXT_PUBLIC_SANITY_DATASET!}
                   projectId={process.env.NEXT_PUBLIC_PROJECT_ID!}
@@ -51,6 +67,48 @@ const Post = ({post}: Props) => {
                />
             </div>
          </article>
+         <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
+         <form className='flex flex-col p-5 max-w-2xl mb-10 mx-auto'>
+            <h3 className='text-sm text-yellow-500'>Enjoyed this article?</h3>
+            <h4 className='text-3xl font-bold'>Leave a comment below!</h4>
+            <hr className='py-3 mt-2'/>
+            <input 
+               type="hidden" 
+               {...register("_id")} 
+               name="_id" 
+               value={post._id}
+            />
+            <label className='block mb-5'>
+               <span className='text-gray-700'>Name</span>
+               <input 
+                  className='shadow border rounded py-2 px-3 form-input mt-1 block w-full ring-yellow-500 outline-none focus:ring' 
+                  placeholder='John Appleseed' 
+                  type="text" 
+                  {...register("name", {required: true})}
+                  />
+            </label>
+            <label className='block mb-5'>
+               <span className='text-gray-700'>Email</span>
+               <input 
+                  className='shadow border rounded py-2 px-3 form-input mt-1 block w-full ring-yellow-500 outline-none focus:ring' 
+                  placeholder='John Appleseed' 
+                  type="text" 
+                  {...register("email", {required: true})}
+                  />
+            </label>
+            <label className='block mb-5'>
+               <span className='text-gray-700'>Comment</span>
+               <textarea 
+                  className='shadow border rounded py-2 px-3 form-textarea mt-1 block w-full ring-yellow-500 outline-none focus:ring' 
+                  placeholder='John Appleseed' 
+                  rows={8} 
+                  {...register("comment", {required: true})}
+               />
+            </label>
+            <div>
+               {errors.name && <p></p>}
+            </div>
+         </form>
       </main>
    )
 }
@@ -94,7 +152,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       slug
    }`
 
-   const post = sanityClient.fetch(query, {slug: params?.slug}) 
+   const post = await sanityClient.fetch(query, {slug: params?.slug}) 
 
    if(!post){
       return {
