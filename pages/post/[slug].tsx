@@ -1,5 +1,5 @@
 import { GetStaticProps } from 'next'
-import React from 'react'
+import React, { useState } from 'react'
 import Header from '../../components/Header'
 import { sanityClient, urlFor } from '../../sanity'
 import { Post } from '../../typings'
@@ -18,6 +18,8 @@ interface FormInput {
 }
 
 const Post = ({post}: Props) => {
+   const [submitted, setSubmitted] = useState(false)
+
    const {
       register, 
       handleSubmit, 
@@ -30,7 +32,11 @@ const Post = ({post}: Props) => {
       await fetch('/api/createComment', {
          method: 'POST',
          body: JSON.stringify(data)
-      }).then
+      }).then(()=>{
+         setSubmitted(true)
+      }).catch(()=>{
+         setSubmitted(false)
+      })
    }
 
    return (
@@ -75,7 +81,16 @@ const Post = ({post}: Props) => {
             </div>
          </article>
          <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
-         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col p-5 max-w-2xl mb-10 mx-auto'>
+         {submitted ? (
+            <div className='flex flex-col p-10 bg-yellow-500 text-white max-w-2xl mx-auto'>
+               <h3 className='text-3xl font-bold'>
+                  Thank you for submitting your comment!
+               </h3>
+               <p>
+                  Once it has been approved, it will appear below!
+               </p>
+            </div>
+         ) :( <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col p-5 max-w-2xl mb-10 mx-auto'>
             <h3 className='text-sm text-yellow-500'>Enjoyed this article?</h3>
             <h4 className='text-3xl font-bold'>Leave a comment below!</h4>
             <hr className='py-3 mt-2'/>
@@ -124,7 +139,7 @@ const Post = ({post}: Props) => {
                )}
             </div>
             <input type="submit" className='shadow bg-yellow-500 hover:bg-yellow-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded cursor-pointer' />
-         </form>
+         </form>)}
       </main>
    )
 }
