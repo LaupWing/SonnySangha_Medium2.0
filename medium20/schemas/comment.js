@@ -23,7 +23,7 @@ export default {
       },
       {
          name: 'post',
-         title: 'reference',
+         type: 'reference',
          to: [{type:'post'}],
       },
    ],
