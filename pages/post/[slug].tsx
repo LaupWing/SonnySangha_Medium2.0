@@ -26,6 +26,13 @@ const Post = ({post}: Props) => {
       }
    } = useForm<FormInput>()
 
+   const onSubmit:SubmitHandler<FormInput> = async (data)=>{
+      await fetch('/api/createComment', {
+         method: 'POST',
+         body: JSON.stringify(data)
+      }).then
+   }
+
    return (
       <main>
          <Header />
@@ -68,7 +75,7 @@ const Post = ({post}: Props) => {
             </div>
          </article>
          <hr className="max-w-lg my-5 mx-auto border border-yellow-500" />
-         <form className='flex flex-col p-5 max-w-2xl mb-10 mx-auto'>
+         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col p-5 max-w-2xl mb-10 mx-auto'>
             <h3 className='text-sm text-yellow-500'>Enjoyed this article?</h3>
             <h4 className='text-3xl font-bold'>Leave a comment below!</h4>
             <hr className='py-3 mt-2'/>
@@ -105,9 +112,18 @@ const Post = ({post}: Props) => {
                   {...register("comment", {required: true})}
                />
             </label>
-            <div>
-               {errors.name && <p></p>}
+            <div className='flex flex-col p-5'>
+               {errors.name &&(
+                  <span className='text-red-500'>The Name Field is required</span>
+               )}
+               {errors.comment &&(
+                  <span className='text-red-500'>The Comment Field is required</span>
+               )}
+               {errors.email &&(
+                  <span className='text-red-500'>The Email Field is required</span>
+               )}
             </div>
+            <input type="submit" className='shadow bg-yellow-500 hover:bg-yellow-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded cursor-pointer' />
          </form>
       </main>
    )
