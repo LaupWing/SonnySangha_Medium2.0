@@ -174,9 +174,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       _createdAt,
       title,
       author-> {
-        name,
-        image
+         name,
+         image
       },
+      'comments': *[
+         _type == "comment" &&
+         post._ref == ^._id &&
+         approved == true
+      ],
       description,
       mainImage,
       body,
